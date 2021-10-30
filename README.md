@@ -11,36 +11,308 @@ EniesLobby sebagai DNS Master, Water7 sebagai DNS Slave, Skypie sebagai webserve
 
 ## Jawab
 
+
+
+pertama mengatur settingan di foosha agar bisa mengakses server. Untuk melakukan itu menjalankan command berikut 
+
+```sh
+
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE -s 10.23.0.0/16
+
+cat /etc/resolv.conf
+```
+lalu akan muncul ip nameserver
+
+kemudian menjalankan command berikut di loguetown dan alabasta
+
+```sh
+echo nameserver 192.168.122.1 > /etc/resolv.conf
+
+```
+agar bisa mengakses internet
+
 ## Nomor 2
 Membuat website utama dengan mengakses **franky.d04.com** / **www.franky.d04.com** pada folder kaizoku.
 
 ## Jawab
+untuk nomer 2 penyelesainnya adalah dengan mengatur konfigurasi pada `/etc/bind/named.conf.local` seperti berikut
+
+```sh
+zone "franky.d04.com" {
+        type master;
+        file "/etc/bind/kaizoku/franky.d04.com";
+};
+
+```
+kemudian dibuat file direktori dengan nama kaizoku pada folder `/etc/bind/` dengan perintah `mkdir /etc/bind/kaizoku`
+setelah itu mengatur file franky.d04.com dengan perintah seperti berikut 
+
+```sh
+;
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     franky.d04.com. root.franky.d04.com. (
+                              2         ; Serial 
+                         604800         ; Refresh
+                          86400         ; Retry 
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;   
+@       IN      NS      franky.d04.com.
+@       IN      A       10.23.2.4
+www     IN      CNAME   franky.d04.com.
+```
+
+kemudian dapat di testing dengah ngeping franky.d04.com dan akan muncul gambar berikut
+
+![jarkom-2](https://github.com/azhar416/Jarkom-Modul-2-D04-2021/blob/main/img/jarkom-2.JPG?raw=true )
 
 ## Nomor 3
 Membuat subdomain **super.franky.d04.com** / **www.super.franky.d04.com** yang diatur DNS-nyadi EniesLobby dan mengarah ke Skypie.
 
 ## Jawab
 
+mirip dengan nomer 2 kita dapat menambahkan beberapa konfigurasi terlebih terdahulu pada `/etc/bind/kaizoku/franky.d04.com`
+
+```sh
+
+echo '
+
+ns1    IN    A    10.23.2.4
+super    IN    NS    ns1
+
+' >> /etc/bind/kaizoku/franky.d04.com
+
+
+```
+
+kemudian menambahkan super.franky.d04.com di `/etc/bind/named.conf.local`
+
+
+```sh
+echo 'zone "super.franky.d04.com"{
+    type master;
+    file "/etc/bind/kaizoku/super.franky.d04.com";
+};' >> /etc/bind/named.conf.local
+
+```
+lalu menjalankan perintah berikut
+
+```sh
+
+echo ';
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     super.franky.d04.com. root.super.franky.d04.com. (
+                              2         ; Serial
+                        604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                        604800 )       ; Negative Cache TTL
+;
+@       IN      NS      super.franky.d04.com.
+@       IN      A       10.23.2.4
+www     IN      CNAME   super.franky.d04.com.'
+ > /etc/bind/kaizoku/super.franky.d04.com
+
+```
+
+dapat di test dengan ngeping super.franky.d04.com
+
+
+![jarkom-3](https://github.com/azhar416/Jarkom-Modul-2-D04-2021/blob/main/img/jarkom-3.JPG?raw=true)
+
+
 ## Nomor 4
 Membuat reverse domain pada domain utama.
 
 ## Jawab
+untuk melalukan reverse domain diperlukan command berikut untuk djalankan
+
+```sh
+
+echo -e 'zone "2.23.10.in-addr.arpa" {
+        type master;
+        file "/etc/bind/kaizoku/2.23.10.in-addr.arpa";
+};' >> /etc/bind/named.conf.local
+
+```
+
+lalu untuk `2.23.10.in-addr.arpa` dapat diatur seperti berikut 
+
+
+```sh
+
+echo  ';
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     franky.d04.com. root.franky.d04.com. (
+                              2         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+2.23.10.in-addr.arpa.   IN      NS      franky.d04.com.
+2       IN      PTR franky.d04.com.' > /etc/bind/kaizoku/2.23.10.in-addr.arpa
+
+```
+
+kemudian dapat ditesting dengan host -t PTR 10.23.2.2 menjadi seperti berikut
+
+
+![jarkom-4](https://github.com/azhar416/Jarkom-Modul-2-D04-2021/blob/main/img/jarkom-4.JPG?raw=true)
 
 ## Nomor 5
 Membuat Water7 sebagai DNS Slave untuk domain utama.
 
 ## Jawab
+pertama kita mengatur franky.d04.com seperti berikut
+
+```sh
+
+zone "franky.d04.com" {
+        type master;
+        notify yes;
+        also-notify { 10.23.2.3; };
+        allow-transfer { 10.23.2.3; };
+        file "/etc/bind/kaizoku/franky.d04.com";
+};
+
+
+
+```
+
+
+lalu mengatur dns slave pada water 7
+
+
+```sh
+
+echo -e '
+	zone "franky.d04.com" {
+		type slave;
+		masters { 10.23.2.2; };
+		file "/var/lib/bind/franky.d04.com";};
+' > /etc/bind/named.conf.local
+```
+
+kemudian untuk ngetesting pada eniesloby menjalankan command `service bind9 stop` untuk mematikan eniesloby kemudian pada loguetown dapat ngeping franky.d04.com
+ 
 
 ## Nomor 6
 Membuat subdomain **mecha.franky.d04.com** / **www.mecha.franky.d04.com** didelegasikan dari EniesLobby ke Water7 dengan IP menuju ke Skypie dalam folder sunnygo.
 
 ## Jawab
 
+pertama kita mengatur franky.do4.com terlebih dahulu dengan menambahkan line berikut 
+
+```sh
+
+echo  'ns1      IN      A       10.23.2.3
+mecha   IN      NS      ns1' >> /etc/bind/kaizoku/franky.d04.com
+
+```
+lalu mengatur `/etc/bind/named.conf.options`
+
+
+```sh
+
+echo  'options {
+        directory "/var/cache/bind";
+        #dnssec-validation auto;
+        allow-query{any;};
+
+        auth-nxdomain no;
+        listen-on-v6 { any; };
+        };' > /etc/bind/named.conf.options
+
+
+
+
+echo  '
+zone "franky.d04.com" {
+        type master;
+        notify yes;
+        also-notify { 10.23.2.3; };
+        allow-transfer { 10.23.2.3; };
+        file "/etc/bind/kaizoku/franky.d04.com";
+};
+
+zone "2.23.10.in-addr.arpa" {
+        type master;
+        file "/etc/bind/kaizoku/2.23.10.in-addr.arpa";
+};
+
+zone "super.franky.d04.com"{
+    type master;
+    file "/etc/bind/kaizoku/super.franky.d04.com";
+};
+
+' > /etc/bind/named.conf.local
+```
+kemudian pada water7 dapat mengatur options seperti berikut 
+
+
+```sh
+echo -e 'options {\n\tdirectory "/var/cache/bind";\n\t#dnssec-validation auto;\nn
+\tallow-query{any;};\n\n\tauth-nxdomain no;\n\tlisten-on-v6 { any; };\n};' > /ett
+c/bind/named.conf.options
+
+```
+
+dapat di testing pada loguetown dengan ping
+
+![jarkom-6](https://github.com/azhar416/Jarkom-Modul-2-D04-2021/blob/main/img/jarkom-6.JPG?raw=true)
+
 ## Nomor 7
 Membuat subdomain melalui Water7 dengan nama **general.mecha.franky.d04.com** / **www.general.mecha.franky.d04.com** yg mengarah ke Skypie.
 
 ## Jawab
+pertama kita mengatur zone baru sperti berikut
 
+```sh
+echo 'zone "general.mecha.franky.d04.com"{
+    type master;
+    file "/etc/bind/sunnygo/general.mecha.franky.d04.com";
+};' >> /etc/bind/named.conf.local
+
+```
+
+lalu menambahkan command berikut pada mecha.franky.d04.com dan mengatur filenya juga
+
+```sh
+echo 'ns1    IN    A    10.23.2.4
+general.mecha    IN    NS    ns1' >> /etc/bind/sunnygo/mecha.franky.d04.com
+
+```
+
+```sh
+
+
+echo ';
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     general.mecha.franky.d04.com. root.general.mecha.franky..
+d04.com. (
+                              2         ; Serial
+                        604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                        604800 )       ; Negative Cache TTL
+;
+@       IN      NS      general.mecha.franky.d04.com.
+@       IN      A       10.23.2.4
+
+```
+
+kemudian dapat ditesting pada loguetoen
+
+![jarkom-7](https://github.com/azhar416/Jarkom-Modul-2-D04-2021/blob/main/img/jarkom-7.JPG?raw=true)
 ## Nomor 8
 Membuat webserver **www.franky.d04.com** membutuhkan webserver dengan DocumentRoot pada **/var/www/franky.d04.com**.
 
