@@ -237,11 +237,64 @@ service apache2 restart
 web **www.general.mecha.franky.d04.com** hanya dapat diakses dengan port 15000 dan port 15500.
 
 ## Jawab
+Pada soal ini langkah-langkah pengerjaan dilakukan seperti nomor 8 dan nomor 10. Hanya saja pada konfigurasi baris pertama, port disetting menjadi 15000 dan 15500 dimana secara default adalah 80.
+```sh
+mv /root/general.mecha.franky /var/www
+mv /var/www/general.mecha.franky /var/www/general.mecha.franky.d04.com
+
+cp /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-available/general.mecha.franky.d04.com.conf
+
+echo '<VirtualHost *:15000 *:15500>
+    ServerAdmin webmaster@localhost
+    ServerName general.mecha.franky.d04.com
+    ServerAlias www.general.mecha.franky.d04.com
+    DocumentRoot /var/www/general.mecha.franky.d04.com
+
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+	CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>' > /etc/apache2/sites-available/general.mecha.franky.d04.com.conf
+
+echo 'Listen 15000
+    Listen 15500' >> /etc/apache2/ports.conf
+
+a2ensite general.mecha.franky.d04.com.conf
+
+service apache2 restart
+```
 
 ## Nomor 15
 Membuat autentikasi dengan `username: luffy` dan `password: onepiece` dan file di **/var/www/general.mecha.franky.d04.com**.
 
 ## Jawab
+Untuk membuat authentikasi perlu ditambahkan configurasi seperti dibawah.
+```sh
+htpasswd -c /etc/apache2/.htpasswd luffy
+
+echo '<VirtualHost *:15000 *:15500>
+    ServerAdmin webmaster@localhost
+    ServerName general.mecha.franky.d04.com
+    ServerAlias www.general.mecha.franky.d04.com
+    DocumentRoot /var/www/general.mecha.franky.d04.com
+    
+    <Directory /var/www/general.mecha.franky.d04.com>
+        Options +FollowSymLinks -Multiviews
+        AllowOverride All
+    </Directory>
+	
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+	CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>' > /etc/apache2/sites-available/general.mecha.franky.d04.com.conf
+```
+
+Setelah itu pada file .htaccess ditambahkan seperti di bawah
+```sh
+echo 'AuthType Basic
+    AuthName "Restricted Content"
+    AuthUserFile /etc/apache2/.htpasswd
+    Require valid-user' > /var/www/general.mecha.franky.d04.com/.htaccess
+
+service apache2 restart
+```
 
 ## Nomor 16
 setiap mengakses IP Skypie akan langsung diarahkan ke **www.franky.d04.com**.
@@ -252,3 +305,35 @@ setiap mengakses IP Skypie akan langsung diarahkan ke **www.franky.d04.com**.
 mengganti request gambar yang memiliki substring "franky" akan diarahkan ke **franky.png**.
 
 ## Jawab
+Seperti pada nomor 9, ditambhakn rewrite rule yang makna jika user mengakses file dengan substring "franky" akan diarahkan ke franky.png
+```sh
+echo '<VirtualHost *:80>
+
+    ServerAdmin webmaster@localhost
+    ServerName super.franky.d04.com
+    ServerAlias www.super.franky.d04.com
+    DocumentRoot /var/www/super.franky.d04.com
+
+    ErrorDocument 404 /error/404.html
+    Alias "/js" "/var/www/super.franky.d04.com/public/js"
+
+    <Directory /var/www/super.franky.d04.com/public>
+        Options +Indexes
+    </Directory>
+
+    <Directory /var/www/super.franky.d05.com>
+        Options +FollowSymLinks -Multiviews
+        AllowOverride All
+    </Directory>
+
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+	CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>' > /etc/apache2/sites-available/super.franky.d04.com.conf
+
+echo 'RewriteEngine On
+    RewriteRule ^(.*)franky(.*)\.(jpg|gif|png)$ http://super.franky.d05.com/public/images/franky.png [L,R]' >> /var/www/super.franky.d04.com/.htaccess
+
+a2ensite super.franky.d04.com.conf
+
+service apache2 restart 
+```
