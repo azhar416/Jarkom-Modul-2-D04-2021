@@ -593,6 +593,24 @@ service apache2 restart
 setiap mengakses IP Skypie akan langsung diarahkan ke **www.franky.d04.com**.
 
 ## Jawab
+Karena tidak bisa mengakses IP EniesLobby, maka IP yang kami alihkan adalah ketika mengakses IP Skypie
+Edit file `/var/www/html/.htaccess` dengan menambahkan:
+
+```bash
+    RewriteEngine On
+    RewriteBase /
+    RewriteCond %{HTTP_HOST} ^10\.23\.2\.4$
+    RewriteRule ^(.*)$ http://www.franky.d04.com [L,R=301]
+```
+
+Kemudian, edit file /etc/apache2/sites-available/000-default.conf dengan menambahkan:
+
+```bash
+    <Directory /var/www/html>
+        Options +FollowSymLinks -Multiviews
+        AllowOverride All
+    </Directory>
+```
 
 ## Nomor 17
 mengganti request gambar yang memiliki substring "franky" akan diarahkan ke **franky.png**.
