@@ -602,6 +602,7 @@ Edit file `/var/www/html/.htaccess` dengan menambahkan:
     RewriteCond %{HTTP_HOST} ^10\.23\.2\.4$
     RewriteRule ^(.*)$ http://www.franky.d04.com [L,R=301]
 ```
+![img](https://github.com/azhar416/Jarkom-Modul-2-D04-2021/blob/main/img/jarkom-16.jpg)
 
 Kemudian, edit file /etc/apache2/sites-available/000-default.conf dengan menambahkan:
 
@@ -611,6 +612,8 @@ Kemudian, edit file /etc/apache2/sites-available/000-default.conf dengan menamba
         AllowOverride All
     </Directory>
 ```
+
+![img](https://github.com/azhar416/Jarkom-Modul-2-D04-2021/blob/main/img/jarkom-16-2.jpg)
 
 ## Nomor 17
 mengganti request gambar yang memiliki substring "franky" akan diarahkan ke **franky.png**.
