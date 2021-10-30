@@ -42,42 +42,51 @@ Membuat subdomain melalui Water7 dengan nama **general.mecha.franky.d04.com** / 
 ## Jawab
 
 ## Nomor 8
-Membuat webserver **www.franky.d04.com** 
+Membuat webserver **www.franky.d04.com** membutuhkan webserver dengan DocumentRoot pada **/var/www/franky.d04.com**.
 
 ## Jawab
 
 ## Nomor 9
+URL **www.franky.d04.com/index.php/home** dapat menjadi **www.franky.d04.com/home**.
 
 ## Jawab
 
 ## Nomor 10
+Pada subdomain **www.super.franky.d04.com** dibutuhkan penyimpanan aset yang memiliki DocumentRoot pada **/var/www/super.franky.d04.com**.
 
 ## Jawab
 
 ## Nomor 11
+Pada folder **/public** hanya dapat melakukan listing.
 
 ## Jawab
 
 ## Nomor 12
+Menyiapkan error file **404.html** pada folder **/error** untuk menggantu error code pada apache.
 
 ## Jawab
 
 ## Nomor 13
+Membuat konfigurasi virtual host untuk mengakses file aset **www.super.franky.d04.com/public/js** menjadi **www.super.franky.d04.com/js**.
 
 ## Jawab
 
 ## Nomor 14
+web **www.general.mecha.franky.d04.com** hanya dapat diakses dengan port 15000 dan port 15500.
 
 ## Jawab
 
 ## Nomor 15
+Membuat autentikasi dengan `username: luffy` dan `password: onepiece` dan file di **/var/www/general.mecha.franky.d04.com**.
 
 ## Jawab
 
 ## Nomor 16
+setiap mengakses IP Skypie akan langsung diarahkan ke **www.franky.d04.com**.
 
 ## Jawab
 
 ## Nomor 17
+mengganti request gambar yang memiliki substring "franky" akan diarahkan ke **franky.png**.
 
 ## Jawab
