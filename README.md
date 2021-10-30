@@ -45,32 +45,194 @@ Membuat subdomain melalui Water7 dengan nama **general.mecha.franky.d04.com** / 
 Membuat webserver **www.franky.d04.com** membutuhkan webserver dengan DocumentRoot pada **/var/www/franky.d04.com**.
 
 ## Jawab
+Untuk menyiapkan webserver, perlu diinstall beberapa aplikasi dengan cara berikut
+```sh
+apt-get install apache2 -y
+apt-get install php -y  
+apt-get install libapache2-mod-php7.0 -y
+apt-get install wget -y
+apt-get install unzip -y
+```
+
+Download file-file yang dibutuhkan pada soal-soal berikutnya dan extract.
+
+```sh
+wget https://raw.githubusercontent.com/FeinardSlim/Praktikum-Modul-2-Jarkom/main/general.mecha.franky.zip
+wget https://raw.githubusercontent.com/FeinardSlim/Praktikum-Modul-2-Jarkom/main/super.franky.zip
+wget https://raw.githubusercontent.com/FeinardSlim/Praktikum-Modul-2-Jarkom/main/franky.zip
+
+unzip general.mecha.franky.zip
+unzip super.franky.zip
+unzip franky.zip
+```
+
+Membuat DocumentRoot dilakukan dengan cara memindahkan folder hasil extract dari franky.zip ke folder /var/www
+```sh
+mv /root/franky /var/www
+mv /var/www/franky /var/www/franky.d04.com
+```
+
+Setelah DocumentRoot sudah siap, dibuatkan configurasi apache webserver dan dimasukkan konfigurasi DocumentRoot sesuai yang baru saja disiapkan. Lalu dilakukan aktivasi configurasi website yang baru saja dibuat dan apache direstart untuk mengaplikasikan perubahan.
+Pada nomor-nomor berikutnya, setelah dilakukan perubahan pada configurasi, selalu dilakukan apache2 restart. Sehingga pada penjelasan langkah pada soal berikutnya tidak akan diulangi untuk penjelasan terkait.
+```sh
+cp /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-available/franky.d04.com.conf
+
+echo '<VirtualHost *:80>
+
+    ServerAdmin webmaster@localhost
+    ServerName franky.d04.com
+    ServerAlias www.franky.d04.com
+    DocumentRoot /var/www/franky.d04.com
+
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+	CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>' > /etc/apache2/sites-available/franky.d04.com.conf
+
+a2ensite franky.d04.com.conf
+
+service apache2 restart
+```
 
 ## Nomor 9
 URL **www.franky.d04.com/index.php/home** dapat menjadi **www.franky.d04.com/home**.
 
 ## Jawab
+Untuk mengubah route agar url www.franky.d04.com/index.php/home dapat menjadi menjadi www.franky.yyy.com/home perlu dilakukan aktivasi module rewite.
+```sh
+a2enmod rewrite
+service apache2 restart
+```
+Setelah itu ditambahkan konfigurasi dan rewrite rule pada file .htaccess serta merestart apache2  
+```sh
+echo 'RewriteEngine On
+    RewriteRule ^home$ index.php/home' > /var/www/franky.d04.com/.htaccess
 
+echo '<VirtualHost *:80>
+
+    ServerAdmin webmaster@localhost
+    ServerName franky.d04.com
+    ServerAlias www.franky.d04.com
+    DocumentRoot /var/www/franky.d04.com
+
+    <Directory /var/www/franky.d04.com>
+        Options +FollowSymLinks -Multiviews
+        AllowOverride All
+    </Directory>
+
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+	CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>' > /etc/apache2/sites-available/franky.d04.com.conf
+
+service apache2 restart
+```
 ## Nomor 10
 Pada subdomain **www.super.franky.d04.com** dibutuhkan penyimpanan aset yang memiliki DocumentRoot pada **/var/www/super.franky.d04.com**.
 
 ## Jawab
+Langkah nomer 10 ini dilakukan seperti pada nomor 8 hanya saja dengan domain dan path yang berbeda.
+```sh
+mv /root/super.franky /var/www
+mv /var/www/super.franky /var/www/super.franky.d04.com
+
+cp /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-available/super.franky.d04.com.conf
+
+echo '<VirtualHost *:80>
+
+    ServerAdmin webmaster@localhost
+    ServerName super.franky.d04.com
+    ServerAlias www.super.franky.d04.com
+    DocumentRoot /var/www/super.franky.d04.com
+
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+	CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>' > /etc/apache2/sites-available/super.franky.d04.com.conf
+
+a2ensite super.franky.d04.com.conf
+
+service apache2 restart
+```
 
 ## Nomor 11
 Pada folder **/public** hanya dapat melakukan listing.
 
 ## Jawab
+Untuk merestrict akses pada folder public hanya dapat melakukan listing ditambahkan configurasi sebagai berikut
+```sh
+echo '<VirtualHost *:80>
+
+    ServerAdmin webmaster@localhost
+    ServerName super.franky.d04.com
+    ServerAlias www.super.franky.d04.com
+    DocumentRoot /var/www/super.franky.d04.com
+
+    <Directory /var/www/super.franky.d04.com/public>
+        Options +Indexes
+    </Directory>
+
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+	CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>' > /etc/apache2/sites-available/super.franky.d04.com.conf
+
+a2ensite super.franky.d04.com.conf
+
+service apache2 restart
+```
 
 ## Nomor 12
 Menyiapkan error file **404.html** pada folder **/error** untuk menggantu error code pada apache.
 
 ## Jawab
+Untuk memberikan halaman error misal pada saat user mengakses url path yang tidak tersedia, ditambahkan configurasi ```ErrorDocument 404 /error/404.html```.
+```sh
+echo '<VirtualHost *:80>
 
+    ServerAdmin webmaster@localhost
+    ServerName super.franky.d04.com
+    ServerAlias www.super.franky.d04.com
+    DocumentRoot /var/www/super.franky.d04.com
+
+    ErrorDocument 404 /error/404.html
+
+    <Directory /var/www/super.franky.d04.com/public>
+        Options +Indexes
+    </Directory>
+
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+	CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>' > /etc/apache2/sites-available/super.franky.d04.com.conf
+
+a2ensite super.franky.d04.com.conf
+
+service apache2 restart
+```
 ## Nomor 13
 Membuat konfigurasi virtual host untuk mengakses file aset **www.super.franky.d04.com/public/js** menjadi **www.super.franky.d04.com/js**.
 
 ## Jawab
+Pada soal nomor ditambahkan alias untuk route ```"/js"``` akan mengarah ke path ```"/var/www/super.franky.d04.com/public/js"```
+```sh
+echo '<VirtualHost *:80>
 
+    ServerAdmin webmaster@localhost
+    ServerName super.franky.d04.com
+    ServerAlias www.super.franky.d04.com
+    DocumentRoot /var/www/super.franky.d04.com
+
+    ErrorDocument 404 /error/404.html
+    Alias "/js" "/var/www/super.franky.d04.com/public/js"
+
+    <Directory /var/www/super.franky.d04.com/public>
+        Options +Indexes
+    </Directory>
+
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+	CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>' > /etc/apache2/sites-available/super.franky.d04.com.conf
+
+a2ensite super.franky.d04.com.conf
+
+service apache2 restart
+```
 ## Nomor 14
 web **www.general.mecha.franky.d04.com** hanya dapat diakses dengan port 15000 dan port 15500.
 
