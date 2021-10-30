@@ -93,6 +93,10 @@ a2ensite franky.d04.com.conf
 service apache2 restart
 ```
 
+
+![img](https://github.com/azhar416/Jarkom-Modul-2-D04-2021/blob/main/img/926.png)
+![img](https://github.com/azhar416/Jarkom-Modul-2-D04-2021/blob/main/img/925.png)
+
 ## Nomor 9
 URL **www.franky.d04.com/index.php/home** dapat menjadi **www.franky.d04.com/home**.
 
@@ -125,6 +129,10 @@ echo '<VirtualHost *:80>
 
 service apache2 restart
 ```
+
+![img](https://github.com/azhar416/Jarkom-Modul-2-D04-2021/blob/main/img/927.png)
+![img](https://github.com/azhar416/Jarkom-Modul-2-D04-2021/blob/main/img/928.png)
+
 ## Nomor 10
 Pada subdomain **www.super.franky.d04.com** dibutuhkan penyimpanan aset yang memiliki DocumentRoot pada **/var/www/super.franky.d04.com**.
 
@@ -152,6 +160,8 @@ a2ensite super.franky.d04.com.conf
 service apache2 restart
 ```
 
+![img](https://github.com/azhar416/Jarkom-Modul-2-D04-2021/blob/main/img/929.png)
+
 ## Nomor 11
 Pada folder **/public** hanya dapat melakukan listing.
 
@@ -177,6 +187,7 @@ a2ensite super.franky.d04.com.conf
 
 service apache2 restart
 ```
+![img](https://github.com/azhar416/Jarkom-Modul-2-D04-2021/blob/main/img/931.png)
 
 ## Nomor 12
 Menyiapkan error file **404.html** pada folder **/error** untuk menggantu error code pada apache.
@@ -205,6 +216,8 @@ a2ensite super.franky.d04.com.conf
 
 service apache2 restart
 ```
+![img](https://github.com/azhar416/Jarkom-Modul-2-D04-2021/blob/main/img/933.png)
+
 ## Nomor 13
 Membuat konfigurasi virtual host untuk mengakses file aset **www.super.franky.d04.com/public/js** menjadi **www.super.franky.d04.com/js**.
 
@@ -233,6 +246,8 @@ a2ensite super.franky.d04.com.conf
 
 service apache2 restart
 ```
+![img](https://github.com/azhar416/Jarkom-Modul-2-D04-2021/blob/main/img/934.png)
+
 ## Nomor 14
 web **www.general.mecha.franky.d04.com** hanya dapat diakses dengan port 15000 dan port 15500.
 
@@ -261,6 +276,8 @@ a2ensite general.mecha.franky.d04.com.conf
 
 service apache2 restart
 ```
+![img](https://github.com/azhar416/Jarkom-Modul-2-D04-2021/blob/main/img/938.png)
+![img](https://github.com/azhar416/Jarkom-Modul-2-D04-2021/blob/main/img/936.png)
 
 ## Nomor 15
 Membuat autentikasi dengan `username: luffy` dan `password: onepiece` dan file di **/var/www/general.mecha.franky.d04.com**.
@@ -295,6 +312,10 @@ echo 'AuthType Basic
 
 service apache2 restart
 ```
+![img](https://github.com/azhar416/Jarkom-Modul-2-D04-2021/blob/main/img/940.png)
+![img](https://github.com/azhar416/Jarkom-Modul-2-D04-2021/blob/main/img/942.png)
+![img](https://github.com/azhar416/Jarkom-Modul-2-D04-2021/blob/main/img/945.png)
+![img](https://github.com/azhar416/Jarkom-Modul-2-D04-2021/blob/main/img/947.png)
 
 ## Nomor 16
 setiap mengakses IP Skypie akan langsung diarahkan ke **www.franky.d04.com**.
@@ -337,3 +358,6 @@ a2ensite super.franky.d04.com.conf
 
 service apache2 restart 
 ```
+![img](https://github.com/azhar416/Jarkom-Modul-2-D04-2021/blob/main/img/947.png)
+![img](https://github.com/azhar416/Jarkom-Modul-2-D04-2021/blob/main/img/948.png)
+![img](https://github.com/azhar416/Jarkom-Modul-2-D04-2021/blob/main/img/951.png)
